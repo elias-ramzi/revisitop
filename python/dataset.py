@@ -3,11 +3,12 @@ import pickle
 
 DATASETS = ['roxford5k', 'rparis6k', 'revisitop1m']
 
+
 def configdataset(dataset, dir_main):
 
     dataset = dataset.lower()
 
-    if dataset not in DATASETS:    
+    if dataset not in DATASETS:
         raise ValueError('Unknown dataset: {}!'.format(dataset))
 
     if dataset == 'roxford5k' or dataset == 'rparis6k':
@@ -41,11 +42,14 @@ def configdataset(dataset, dir_main):
 
     return cfg
 
+
 def config_imname(cfg, i):
     return os.path.join(cfg['dir_images'], cfg['imlist'][i] + cfg['ext'])
 
+
 def config_qimname(cfg, i):
     return os.path.join(cfg['dir_images'], cfg['qimlist'][i] + cfg['qext'])
+
 
 def read_imlist(imlist_fn):
     with open(imlist_fn, 'r') as file:

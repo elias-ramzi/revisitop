@@ -2,10 +2,11 @@ import os
 import urllib.request
 import tarfile
 
+
 def download_datasets(data_dir):
     """
     DOWNLOAD_DATASETS Checks, and, if required, downloads the necessary datasets for the testing.
-      
+
         download_datasets(DATA_ROOT) checks if the data necessary for running the example script exist.
         If not it downloads it in the folder structure:
             DATA_ROOT/datasets/roxford5k/ : folder with Oxford images
@@ -15,7 +16,7 @@ def download_datasets(data_dir):
     # Create data folder if it does not exist
     if not os.path.isdir(data_dir):
         os.mkdir(data_dir)
-    
+
     # Create datasets folder if it does not exist
     datasets_dir = os.path.join(data_dir, 'datasets')
     if not os.path.isdir(datasets_dir):
@@ -80,7 +81,7 @@ def download_distractors(data_dir):
     # Create data folder if it does not exist
     if not os.path.isdir(data_dir):
         os.mkdir(data_dir)
-    
+
     # Create datasets folder if it does not exist
     datasets_dir = os.path.join(data_dir, 'datasets')
     if not os.path.isdir(datasets_dir):
@@ -146,7 +147,7 @@ def download_features(data_dir):
     # Create data folder if it does not exist
     if not os.path.isdir(data_dir):
         os.mkdir(data_dir)
-    
+
     # Create features folder if it does not exist
     features_dir = os.path.join(data_dir, 'features')
     if not os.path.isdir(features_dir):
@@ -165,4 +166,8 @@ def download_features(data_dir):
         if not os.path.exists(feat_dst_file):
             print('>> Downloading dataset {} features file {}...'.format(dataset, feat_dl_file))
             os.system('wget {} -O {}'.format(feat_src_file, feat_dst_file))
-    
+
+
+if __name__ == '__main__':
+    download_datasets("/home/elias")
+    # download_distractors("/local/DEEPLEARNING/image_retrieval/")

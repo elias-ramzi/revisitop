@@ -31,13 +31,13 @@ distractors_dataset = 'revisitop1m'
 def pil_loader(path):
     # to avoid crashing for truncated (corrupted images)
     ImageFile.LOAD_TRUNCATED_IMAGES = True
-    # open path as file to avoid ResourceWarning 
+    # open path as file to avoid ResourceWarning
     # (https://github.com/python-pillow/Pillow/issues/835)
     with open(path, 'rb') as f:
         img = Image.open(f)
         return img.convert('RGB')
 
-print('>> {}: Processing dataset...'.format(distractors_dataset)) 
+print('>> {}: Processing dataset...'.format(distractors_dataset))
 # config file for the dataset
 cfg = configdataset(distractors_dataset, os.path.join(data_root, 'datasets'))
 

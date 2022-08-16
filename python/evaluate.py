@@ -3,12 +3,12 @@ import numpy as np
 def compute_ap(ranks, nres):
     """
     Computes average precision for given ranked indexes.
-    
+
     Arguments
     ---------
     ranks : zerro-based ranks of positive images
     nres  : number of positive images
-    
+
     Returns
     -------
     ap    : average precision
@@ -40,14 +40,14 @@ def compute_map(ranks, gnd, kappas=[]):
     """
     Computes the mAP for a given set of returned results.
 
-         Usage: 
-           map = compute_map (ranks, gnd) 
+         Usage:
+           map = compute_map (ranks, gnd)
                  computes mean average precsion (map) only
-        
-           map, aps, pr, prs = compute_map (ranks, gnd, kappas) 
+
+           map, aps, pr, prs = compute_map (ranks, gnd, kappas)
                  computes mean average precision (map), average precision (aps) for each query
                  computes mean precision at kappas (pr), precision at kappas (prs) for each query
-        
+
          Notes:
          1) ranks starts from 0, ranks.shape = db_size X #queries
          2) The junk results (e.g., the query itself) should be declared in the gnd stuct array
@@ -101,7 +101,7 @@ def compute_map(ranks, gnd, kappas=[]):
         # compute precision @ k
         pos += 1 # get it to 1-based
         for j in np.arange(len(kappas)):
-            kq = min(max(pos), kappas[j]); 
+            kq = min(max(pos), kappas[j]);
             prs[i, j] = (pos <= kq).sum() / kq
         pr = pr + prs[i, :]
 

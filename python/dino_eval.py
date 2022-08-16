@@ -8,31 +8,34 @@
 # Authors: Radenovic F., Iscen A., Tolias G., Avrithis Y., Chum O., 2018
 
 import os
-import numpy as np
 
-from scipy.io import loadmat
+import numpy as np
+import torch
+import torch.nn.functional as F
+import timm
+from tqdm import tqdm
 
 from dataset import configdataset
-from download import download_datasets, download_features
+from torch_dataset import get_loaders
+from download import download_datasets
 from evaluate import compute_map
 
-#---------------------------------------------------------------------
+#  ---------------------------------------------------------------------
 # Set data folder and testing parameters
-#---------------------------------------------------------------------
+#  ---------------------------------------------------------------------
 # Set data folder, change if you have downloaded the data somewhere else
 # data_root = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'data')
 data_root = '/local/SSD_DEEPLEARNING_1/image_retrieval/'
 # Check, and, if necessary, download test data (Oxford and Pairs),
 # revisited annotation, and example feature vectors for evaluation
-# download_datasets(data_root)
-# download_features(data_root)
+download_datasets(data_root)
 
 # Set test dataset: roxford5k | rparis6k
-test_dataset = 'rparis6k'
+test_dataset = 'roxford5k'
 
-#---------------------------------------------------------------------
+#  ---------------------------------------------------------------------
 # Evaluate
-#---------------------------------------------------------------------
+#  ---------------------------------------------------------------------
 
 print('>> {}: Evaluating test dataset...'.format(test_dataset))
 # config file for the dataset
@@ -40,12 +43,26 @@ print('>> {}: Evaluating test dataset...'.format(test_dataset))
 cfg = configdataset(test_dataset, os.path.join(data_root, 'datasets'))
 
 # load query and database features
-print('>> {}: Loading features...'.format(test_dataset))
-# features = loadmat(os.path.join(data_root, 'features', '{}_resnet_rsfm120k_gem.mat'.format(test_dataset)))
-# Q = features['Q']
-# X = features['X']
-Q = np.load("tmp/query.npy").T
-X = np.load("tmp/gallery.npy").T
+print('>> {}: Computing features...'.format(test_dataset))
+state = torch.utils.model_zoo.load_url("https://dl.fbaipublicfiles.com/dino/dino_vitsmall16_googlelandmark_pretrain/dino_vitsmall16_googlelandmark_pretrain.pth")
+model = timm.create_model("vit_small_patch16_224")
+model.reset_classifier(-1)
+_ = model.load_state_dict(state)
+_ = model.to('cuda', non_blocking=True)
+_ = model.eval()
+
+loader_query, loader_gallery = get_loaders(os.path.join(data_root, 'datasets', test_dataset))
+Q, X = [], []
+for batch in tqdm(loader_query):
+    with torch.no_grad():
+        Q.append(F.normalize(model(batch['image'].to('cuda', non_blocking=True))))
+
+for batch in tqdm(loader_gallery):
+    with torch.no_grad():
+        X.append(F.normalize(model(batch['image'].to('cuda', non_blocking=True))))
+
+Q = torch.cat(Q).cpu().numpy().T
+X = torch.cat(X).cpu().numpy().T
 print(Q.shape)
 print(X.shape)
 
